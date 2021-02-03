@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { layers } from './layers'
+import CommuteDistanceControls from './CommuteDistanceControls'
+
 import {
   Accordion,
   AccordionPanel,
@@ -104,6 +106,8 @@ const openModal = () => {
     'Find the best appartment to live in using the best data sets!!! fuck brokers they are lying scum trash!!!! '
   )
 }
+
+
 const VisualizationControls = (props) => {
   const [checked, setChecked] = useState(false)
   const [activeIndex, setActiveIndex] = useState([0]);
@@ -138,9 +142,7 @@ const VisualizationControls = (props) => {
         <AccordionPanel
           header={renderPanelHeader('Commute Distance', activeIndex.includes(2))}
         >
-          <Box pad="medium" background="light-2" style={{ height: '300px' }}>
-            <Text>Panel 3 contents</Text>
-          </Box>
+          <CommuteDistanceControls />
         </AccordionPanel>
 
 

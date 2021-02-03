@@ -32,11 +32,13 @@
     "prop-types": "^15.7.2",
     "rc-collapse": "^3.1.0",
     "react": "^16.3.0",
+    "react-cool-onclickoutside": "^1.5.9",
     "react-dom": "^16.3.0",
     "react-map-gl": "^5.1.0",
     "react-vis": "^1.11.7",
     "style-ext-html-webpack-plugin": "^4.1.2",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "use-places-autocomplete": "^1.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
