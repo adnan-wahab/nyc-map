@@ -1,57 +1,39 @@
 // Script will grab each peace of data from that page individually
-const zillowJSONData = require('./zillow-urls.json')
-
-// console.log(zillowJSONData)
-
-// We will send it to this page where we can play around with the data
-const DESTINATION_PATH = 'page-info.json'
-
 const puppeteer = require('puppeteer')
 const fs = require('fs')
+const zillowJSONData = require('./zillow-urls.json')
+// const testUrl = 'https://www.zillow.com/b/the-alexander-rego-park-ny-65b5Xv/'
+const DESTINATION_PATH = 'page-info.json'
 
-// To individually have each page in an array
-let individualEl = []
-zillowJSONData.forEach((el) => individualEl.push(el))
-
-// Sleep so we don't get caught
 function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 async function sleep(fn, ...args) {
-    await timeout(3000)
-    return fn(...args)
+  await timeout(3000)
+  return fn(...args)
 }
 
 ;(async () => {
-    const browser = await puppeteer.launch({ headless: false })
-    // This variable will hold each url starting from first to last and will iterate over
-    const url = individualEl.forEach((el) => el + 1)
+  const browser = await puppeteer.launch({ headless: false })
 
-    // All the info in this array
-    const allInfo = []
-    async function getData(i) {
-        const page = await browser.newPage()
+  const page = await browser.newPage()
+  //   console.log('Gathering data from the pages')
 
-        await page.goto(url)
-        // This selector should only aim for the pricing for now
-        const selector = '.units-table__text--sectionheading'
-        // To extract the pricing
-        const pricePage = await page.$$eval(selector, (nodes) =>
-            nodes.map((el) => el.href)
-        )
-        pricePage.forEach((url) => allInfo.push(url))
+  await page.goto(zillowJSONData) // for now, it works with the 1 val
 
-        await page.waitFor(1500)
+  const pricingSelector = '.units-table__text--sectionheading'
 
-        await page.close()
+  // Getting value from any element https://stackoverflow.com/a/61077067/6859827
+  // Docs: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pageevalselector-pagefunction-args-1
+  const price = await page.$eval(pricingSelector, (el) => el.textContent)
+  await page.waitFor(1500)
 
-        await browser.close()
-        // To write it in our file declared aboce
-        fs.writeFileSync(DESTINATION_PATH, JSON.stringify(pricePage))
+  await page.close()
 
-        sleep(getData, 0)
-    }
+  await browser.close()
+
+  fs.writeFileSync(DESTINATION_PATH, JSON.stringify(price))
 })()
 
 // Below are all the div and spand we will take from zillow
