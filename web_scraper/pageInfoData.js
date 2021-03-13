@@ -16,37 +16,39 @@ async function sleep(fn, ...args) {
 
 ;(async () => {
   const browser = await puppeteer.launch({ headless: false })
+  let price
+  while (zillowJSONData) {
+    let url = zillowJSONData.pop()
+    const page = await browser.newPage()
+    await page.goto(url) // for now, it works with the 1 val
+    const pricingSelector = '.units-table__text--sectionheading'
 
-  const page = await browser.newPage()
-  //   console.log('Gathering data from the pages')
+    // Getting value from any element https://stackoverflow.com/a/61077067/6859827
+    // Docs: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pageevalselector-pagefunction-args-1
+    price = await page.$eval(pricingSelector, (el) => el.textContent)
+    await page.waitFor(1500)
 
-  await page.goto(zillowJSONData) // for now, it works with the 1 val
+    await page.close()
 
-  const pricingSelector = '.units-table__text--sectionheading'
-
-  // Getting value from any element https://stackoverflow.com/a/61077067/6859827
-  // Docs: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pageevalselector-pagefunction-args-1
-  const price = await page.$eval(pricingSelector, (el) => el.textContent)
-  await page.waitFor(1500)
-
-  await page.close()
-
-  await browser.close()
+    await browser.close()
+  }
 
   fs.writeFileSync(DESTINATION_PATH, JSON.stringify(price))
 })()
 
-// Below are all the div and spand we will take from zillow
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// source_url: xxx,  price: units-table__text--sectionheading,
+// // Below are all the div and spand we will take from zillow
 
-// bedrooms: units-table__text--smallbody bdp-home-dna-val
+// // source_url: xxx,  price: units-table__text--sectionheading,
 
-// bathrooms: units-table__text--smallbody bdp-home-dna-val
+// // bedrooms: units-table__text--smallbody bdp-home-dna-val
 
-// type: tbd,
+// // bathrooms: units-table__text--smallbody bdp-home-dna-val
 
-// address: Text-c11n-8-15-1__aiai24-0 sc-hHKmLs jyTAcy bpSmhb,
+// // type: tbd,
 
-// image_url: tbd
-// }
+// // address: Text-c11n-8-15-1__aiai24-0 sc-hHKmLs jyTAcy bpSmhb,
+
+// // image_url: tbd
+// // }
