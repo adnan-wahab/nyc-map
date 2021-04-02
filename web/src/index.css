@@ -1,4 +1,27 @@
-body {margin: 0; padding: 0; overflow: hidden;}
+/**
+ * START --- TAILWIND GENERATOR EDIT
+ *
+ * `yarn rw setup tailwind` placed these imports here
+ * to inject Tailwind's styles into your CSS.
+ * For more information, see: https://tailwindcss.com/docs/installation#add-tailwind-to-your-css
+ */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/**
+ * END --- TAILWIND GENERATOR EDIT
+ */
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+/* purgecss end ignore */
+@tailwind utilities;
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
 
 .overlays {
     isolation: 'isolate';
@@ -13,7 +36,7 @@ body {margin: 0; padding: 0; overflow: hidden;}
 }
 
 body {
-    font-family: "Helvetica Neue", Helvetica, sans-serif !important;
+    font-family: "PT Sans", sans-serif;
     font-size: 16px;
     padding: 0;
     margin: 0;
@@ -26,29 +49,119 @@ a:hover {
     text-decoration: underline;
 }
 .mapboxgl-control-container {
-  display: none;
+    /* display: none; */
 }
 
 .background {
-  background: '#2e3440'
+    background: '#2e3440';
 }
 .base {
-  background: '#3b4252'
+    background: '#3b4252';
 }
 .foreground {
-  background: '#d8dee9'
+    background: '#d8dee9';
 }
 
 .selected {
-  text-decoration: underline;
-  color: rgb(46, 124, 246) !important;
+    text-decoration: underline;
+    color: rgb(46, 124, 246) !important;
+}
+[type='password'],
+[type='number'],
+[type='date'],
+[type='month'],
+[type='search'],
+[type='tel'],
+[type='time'],
+[multiple],
+textarea,
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border-color: #6b7280;
+    border-width: 1px;
+    border-radius: 0px;
+    padding-top: 0.5rem;
+    padding-right: 0.75rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
 }
 
-[data-state="tabbordion"] {
-  clip: rect(0 0 0 0);
-  height: 1px;
-  position: absolute;
-  position: fixed;
-  width: 1px;
-  z-index: -1;
+.layout {
+    display: table;
+    width: 100%;
+}
+
+.legend {
+    height: 12px;
+    display: table-cell;
+}
+
+.text-right {
+    float: right;
+}
+
+/* input[type=range] {
+  width: 100%;
+  height: 40px;
+  padding: 8px 0;
+  position: relative;
+}
+
+input[type=range] *,
+input[type=range]:focus,
+input[type=range]:focus-within {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  transform: translateZ(0);
+  box-shadow: 0 0 0 #0342ad, 0 0 0 #034cc6;
+  border: 4px solid #0342ad;
+  height: 32px;
+  width: 32px;
+}  */
+
+@keyframes rainbow {
+    0% {
+        background-position: 0% 100%;
+    }
+    50% {
+        background-position: 100% 200%;
+    }
+    100% {
+        background-position: 0% 100%;
+    }
+}
+
+#rainbow-progress-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000;
+
+    width: 100%;
+    height: 4px;
+
+    background: linear-gradient(
+        124deg,
+        #ff2400,
+        #e81d1d,
+        #e8b71d,
+        #e3e81d,
+        #1de840,
+        #1ddde8,
+        #2b1de8,
+        #dd00f3,
+        #dd00f3
+    );
+    background-size: 900% 900%;
+
+    animation: rainbow 9s ease infinite;
 }

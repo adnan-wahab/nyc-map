@@ -8,10 +8,10 @@
 // thoughtful. =)
 
 export default () => (
-  <main>
-    <style
-      dangerouslySetInnerHTML={{
-        __html: `
+    <main>
+        <style
+            dangerouslySetInnerHTML={{
+                __html: `
               html, body {
                 margin: 0;
               }
@@ -41,13 +41,13 @@ export default () => (
                 line-height: 1;
                 color: #2D3748;
               }
-            `
-      }}
-    />
-    <section>
-      <h1>
-        <span>Something went wrong</span>
-      </h1>
-    </section>
-  </main>
+            `,
+            }}
+        />
+        <section>
+            <h1>
+                <span>Something went wrong</span>
+            </h1>
+        </section>
+    </main>
 )

@@ -7,7 +7,8 @@
     "wix.vscode-import-cost",
     "pflannery.vscode-versionlens",
     "editorconfig.editorconfig",
-    "graphql.vscode-graphql"
+    "graphql.vscode-graphql",
+    "esbenp.prettier-vscode"
   ],
   "unwantedRecommendations": []
 }

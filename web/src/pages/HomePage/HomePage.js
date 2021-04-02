@@ -1,80 +1,34 @@
-import React, { useState, useEffect } from 'react'
-import { StaticMap } from 'react-map-gl'
-import DeckGL from 'deck.gl'
-import { LayerControls, HEXAGON_CONTROLS } from 'src/components/controls'
+import React, { useState } from 'react'
+
 import VisualizationControls from 'src/components/VisualizationControls'
-import ListingControls from 'src/components/ListingControls'
-import styled from 'styled-components'
-import { layers } from 'src/components/layers'
+import Map from 'src/components/Map'
+import ListingModal from 'src/components/ListingModal'
+import MapContext from 'src/components/MapContext'
 
-import { Grommet } from 'grommet';
+import '@blueprintjs/core/lib/css/blueprint.css'
 
-const INITIAL_VIEW_STATE = {
-  longitude: -73.91922208269459,
-  latitude: 40.72185277744134,
-  zoom: 11.502812637593744,
-  pitch: 0,
-  bearing: 0,
-  width: 960,
-  height: 500,
-}
-
-// Set your mapbox token here
-const MAPBOX_TOKEN = // process.env.MapboxAccessToken; // eslint-disable-line
-  'pk.eyJ1IjoiYXdhaGFiIiwiYSI6ImNpenExZHF0ZTAxMXYzMm40cWRxZXY1d3IifQ.TdYuekJQSG1eh6dDpywTxQ'
-
-const Legend = styled.section`
-  display: fixed;
-`
 function Root() {
-  const [selection, setSelection] = useState(0)
-  const [layer, setLayer] = useState([])
+    const [selectedLayer, selectLayer] = useState()
+    const [showLoading, setShowLoading] = useState()
+    const [listing, setListing] = useState()
 
-  const _onWebGLInitialize = (gl) => {
-    gl.enable(gl.DEPTH_TEST)
-    gl.depthFunc(gl.LEQUAL)
-  }
-
-  const _updateLayerSettings = (settings) => {
-    setData({ settings })
-  }
-
-  const _selectLayer = async (e) => {
-    console.log(+e.target.id)
-    setSelection(e.target.id)
-  }
-
-  useEffect(() => {
-    const poop = async () => {
-      const l = await layers[selection].fn()
-      setLayer(l)
+    const stuff = {
+        showLoading: setShowLoading,
+        setSelectedListing: setListing,
     }
-    poop()
-  }, [selection])
 
-  return (
-    <Grommet theme={{ global: { colors: { doc: '#ff99cc' } } }} >
-      <ListingControls />
-      <VisualizationControls selectedIndex={selection} onClick={_selectLayer} />
+    const loader = <div id="rainbow-progress-bar"></div>
 
-      {false && (
-        <LayerControls
-          settings={this.state.settings}
-          propTypes={HEXAGON_CONTROLS}
-          onChange={(settings) => this._updateLayerSettings(settings)}
-        />
-      )}
-
-      <DeckGL initialViewState={INITIAL_VIEW_STATE} controller layers={[layer]}>
-        <StaticMap
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v9"
-        />
-      </DeckGL>
-
-      <Legend />
-    </Grommet>
-  )
+    return (
+        <div className="antialiased">
+            {showLoading && loader}
+            <MapContext.Provider value={stuff}>
+                <ListingModal object={listing} />
+                <VisualizationControls setLayer={selectLayer} />
+                <Map layers={[selectedLayer]} />
+            </MapContext.Provider>
+        </div>
+    )
 }
 
 export default Root

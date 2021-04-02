@@ -1,31 +1,67 @@
 const MongoClient = require('mongodb').MongoClient
 
-const url = `mongodb+srv://poop:poop@cluster0.rucmp.mongodb.net/test?retryWrites=true&w=majority`
+const MONGODB_URI =
+    'mongodb+srv://poop:poop@cluster0.rucmp.mongodb.net/test?retryWrites=true&w=majority'
 
-const client = new MongoClient(url, { useUnifiedTopology: true })
+let cachedDb = null
+
+function connectToDatabase(uri) {
+    console.log('=> connect to database')
+    if (cachedDb) {
+        console.log('=> using cached database instance')
+        return Promise.resolve(cachedDb)
+    }
+    return MongoClient.connect(uri).then((db) => {
+        cachedDb = db
+        return cachedDb
+    })
+}
+
+function queryDatabase(db, collection) {
+    console.log('=> query database')
+    let project = {
+        id: 1,
+        coordinates: 1,
+        categories: 1,
+        name: 1,
+        image_url: 1,
+        _id: 0,
+    }
+    return db
+        .db('test')
+        .collection('places')
+        .find({})
+        .project(project)
+        .toArray()
+        .then((result) => {
+            return result
+        })
+        .catch((err) => {
+            console.log('=> an error occurred: ', err)
+            return { statusCode: 500, body: 'error' }
+        })
+}
 
 export const handler = async (event, context) => {
-  console.log(event, context)
+    context.callbackWaitsForEmptyEventLoop = false
 
-  let query = event.body
-  // connect to your cluster
-  const client = await MongoClient.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  // specify the DB's name
-  const db = client.db('test') // execute find query
-  const items = await db.collection('places').find({}).toArray()
-  //TODO only return the bare minimum we need to render (no mongo _id, no health inspection data )
-  //console.log(items)
-  // close connection
-  client.close()
+    let result = await connectToDatabase(MONGODB_URI)
+        .then((db) => queryDatabase(db))
+        .then((result) => {
+            //console.log('=> returning result: ', result)
+            //callback(null, result)
+            return result
+        })
+        .catch((err) => {
+            console.log('=> an error occurred: ', err)
+            return err
+        })
 
-  return {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-    statusCode: 200,
-    body: JSON.stringify(items),
-  }
+    return {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
+        statusCode: 200,
+        body: result,
+    }
 }

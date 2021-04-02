@@ -14,7 +14,7 @@
     "extends": "@redwoodjs/eslint-config"
   },
   "engines": {
-    "node": ">=12",
+    "node": ">=14",
     "yarn": ">=1.15"
   },
   "scripts": {
@@ -25,6 +25,7 @@
     "puppeteer": "^6.0.0",
     "puppeteer-extra": "^3.1.16",
     "puppeteer-extra-plugin-stealth": "^2.7.3",
+    "sqlite3": "^5.0.1",
     "yelp-fusion": "^3.0.0"
   }
 }

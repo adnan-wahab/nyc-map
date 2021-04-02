@@ -1,10 +1,10 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "src/*": ["./src/*"]
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "src/*": ["./src/*"]
+        },
+        "jsx": "preserve"
     },
-    "jsx": "preserve"
-  },
-  "include": ["src/**/*", "../.redwood/index.d.ts"]
+    "include": ["src/**/*", "../.redwood/index.d.ts"]
 }
