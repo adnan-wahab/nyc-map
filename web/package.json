@@ -1,53 +1,60 @@
 {
-  "name": "web",
-  "version": "0.0.0",
-  "private": true,
-  "browserslist": {
-    "development": [
-      "last 1 version"
-    ],
-    "production": [
-      "defaults",
-      "not IE 11",
-      "not IE_Mob 11"
-    ]
-  },
-  "dependencies": {
-    "@deck.gl/aggregation-layers": "^8.3.14",
-    "@loaders.gl/core": "^2.3.7",
-    "@loaders.gl/csv": "^2.3.7",
-    "@luma.gl/constants": "^8.0.1",
-    "@redwoodjs/forms": "^0.24.0",
-    "@redwoodjs/router": "^0.24.0",
-    "@redwoodjs/web": "^0.24.0",
-    "css-loader": "^3.2.0",
-    "csv": "^5.3.0",
-    "d3": "^5.12.0",
-    "d3-request": "^1.0.6",
-    "deck.gl": "^8.1.0",
-    "grommet": "^2.16.2",
-    "h3-js": "^3.6.3",
-    "js-md4": "^0.3.2",
-    "lodash": "^4.17.15",
-    "prop-types": "^15.7.2",
-    "rc-collapse": "^3.1.0",
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0",
-    "react-map-gl": "^5.1.0",
-    "react-vis": "^1.11.7",
-    "style-ext-html-webpack-plugin": "^4.1.2",
-    "styled-components": "^5.1.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.0",
-    "fs-extra": "^9.0.1",
-    "html-webpack-plugin": "^3.0.7",
-    "style-loader": "^1.0.0",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.1"
-  }
+    "name": "web",
+    "version": "0.0.1",
+    "private": true,
+    "browserslist": {
+        "development": [
+            "last 1 version"
+        ],
+        "production": [
+            "defaults",
+            "not IE 11",
+            "not IE_Mob 11"
+        ]
+    },
+    "resolutions": {
+        "react-dom": "17.0.1",
+        "react": "17.0.1"
+    },
+    "dependencies": {
+        "@blueprintjs/core": "^3.39.0",
+        "@blueprintjs/select": "^3.15.8",
+        "@deck.gl/aggregation-layers": "^8.3.14",
+        "@luma.gl/constants": "^8.0.1",
+        "@redwoodjs/forms": "^0.27.1",
+        "@redwoodjs/router": "^0.27.1",
+        "@redwoodjs/web": "^0.27.1",
+        "@tailwindcss/forms": "^0.2.1",
+        "css-loader": "^3.2.0",
+        "csv": "^5.3.0",
+        "deck.gl": "^8.4.0",
+        "geojson2h3": "^1.1.0",
+        "h3-js": "^3.6.3",
+        "react": "17.0.0",
+        "react-cool-onclickoutside": "^1.5.9",
+        "react-dom": "^16.3.0",
+        "react-map-gl": "^5.1.0",
+        "style-ext-html-webpack-plugin": "^4.1.2",
+        "supercluster": "^7.1.2",
+        "use-persisted-state": "^0.3.3",
+        "use-places-autocomplete": "^1.8.1"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.0.0",
+        "@babel/plugin-proposal-class-properties": "^7.7.4",
+        "@babel/preset-react": "^7.0.0",
+        "@fullhuman/postcss-purgecss": "^4.0.0",
+        "@redwoodjs/core": "^0.27.1",
+        "autoprefixer": "9.8.6",
+        "babel-loader": "^8.0.0",
+        "fs-extra": "^9.0.1",
+        "html-webpack-plugin": "^3.0.7",
+        "postcss-loader": "4.0.2",
+        "prettier": "^2.2.1",
+        "style-loader": "^1.0.0",
+        "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+        "webpack": "^4.20.2",
+        "webpack-cli": "^3.1.2",
+        "webpack-dev-server": "^3.1.1"
+    }
 }

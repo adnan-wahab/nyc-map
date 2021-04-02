@@ -1,176 +1,144 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { layers } from './layers'
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Text,
-  TextInput,
-} from 'grommet';
+import React, { useState, useRef } from 'react'
+import CommuteDistanceControls from './CommuteDistanceControls'
+import ComplaintControls from './ComplaintControls'
+import SuitabilityControls from './SuitabilityControls'
+import PlaceControls from './PlaceControls'
+import ListingControls from 'src/components/ListingControls'
 
-// import Accordion from './Accordion'
-
-
-const renderPanelHeader = (title, active) => (
-  <Box direction="row" align="center" pad="medium" gap="small">
-    <strong>
-      <Text>{title}</Text>
-    </strong>
-    <Text color="brand">{active ? '-' : '+'}</Text>
-  </Box>
-);
-const makeNameGood = (str) => {
-  return str.replace('_', ' ')
+let blurb = () => {
+    return (
+        <>
+            <div className="overflow-hidden p-5">
+                <h3>Data Attribution</h3>
+                <p>
+                    Data Attribution Crib Finder makes use of a variety of
+                    public data sources and third-party databases. You can find
+                    more information about the terms governing their use on the
+                    <a href="">Attribution page</a>.
+                </p>
+                <h3>Disclaimer</h3>
+                <p>
+                    The data and the associated metadata are provided "as-is",
+                    without express or implied warranty of completeness,
+                    accuracy, or fitness for a particular purpose.
+                    <a href="">Read full disclaimer</a>
+                </p>
+            </div>
+            <div className="flex">
+                <button
+                    className="inline-flex items-center px-2.5 py-1.5 border
+                     border-gray-300 shadow-sm text-xs font-medium rounded
+                      text-gray-700 bg-white hover:bg-gray-50 focus:outline-none
+                       focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Contact
+                </button>
+            </div>
+        </>
+    )
 }
 
-const Link = styled.a`
-  text-decoration: none;
-  color: #323232;
-`
+let titles = [
+    'Browse Listings',
+    '311 Complaints',
+    'Suitability Analysis',
+    'Places to go',
+    'Commute Distance?',
+    'Data Attribution',
+]
 
-const buildListItems = (selectedIndex) => {
-  return layers.map((obj, i) => (
-    <li key={obj.name} className={selectedIndex == obj.name ? 'selected' : ''}>
-      <Link
-        onClick={(e) => {
-          e.preventDefault()
-        }}
-        href={'#' + obj.name}
-        target="_blank"
-        id={i}
-      >
-        {makeNameGood(obj.name)}
-      </Link>
-    </li>
-  ))
+let content = [
+    'Crib Finder is a urban analysis tool designed for discovering the best place in New York City for you to live. Use a single, powerful, interactive interface and explore pricing and spatial insights faster than ever.',
+    `The layer aggregates data within the boundary of each hexagon cell
+    `,
+
+    `Suitability analysis is a GIS-based multi-criteria decision making process.
+    Each aspect of the landscape has characteristics that are in some degree either suitable or unsuitable for the activities being planned.
+    Use the sliders below to adjust the importance of each category`,
+
+    `Access to transit within walking distances of places where people live and work is crucial for maintaining the economic vitality and quality of life in cities.`,
+]
+
+const Accordion = ({ setLayer, scrollTop }) => {
+    let [selectedIndex, setSelectedIndex] = useState(0),
+        SIZE = 400,
+        fraction = Math.floor(scrollTop / SIZE)
+
+    if (selectedIndex !== fraction) setSelectedIndex(fraction)
+    let list = [
+        ListingControls,
+        ComplaintControls,
+        SuitabilityControls,
+        PlaceControls,
+        CommuteDistanceControls,
+        blurb,
+    ].map((Child, idx) => (
+        <div key={idx} className="tab w-full text-black">
+            <div
+                style={{ height: `${SIZE}px` }}
+                className={`opacity-${selectedIndex === idx ? '100' : '50'}`}
+            >
+                <h3 className="px-5 pt-5 border-t text-xl">{titles[idx]}</h3>
+                <p className="p-5 text-sm border-b">{content[idx]}</p>
+                <Child
+                    className="p-5"
+                    setLayer={setLayer}
+                    selected={selectedIndex === idx}
+                />
+            </div>
+        </div>
+    ))
+
+    return <div className="shadow-md">{list}</div>
 }
 
-const List = styled.section`
-  background: transparent;
-  border-radius: 3px;
-  margin: 0 1em;
-  padding: 0.25em 1em;
-`
-// The above changes the color for the legend.
-const SidePanel = styled.section`
-  line-height: 21px;
-  font-size: 16px;
-  padding: 0px;
-  font-size: 10px;
-  position: fixed;
-  right: 0px;
-  z-index: 1100;
-  background: white;
-  height: 100%;
-  width: 350px;
-  box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.2);
-  font-weight: 500;
-  color: black;
-  overflow: scroll;
-`
-const SubHeader = styled.section`
-  padding: 0px 1.5rem;
-  border-color: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #333;
-  border-color: rgba(0, 0, 0, 0.1);
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  font-weight: 600;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-`
+const VisualizationControls = ({ setLayer }) => {
+    let [scrollTop, setScrollTop] = useState(0)
+    let myRef = useRef(null)
 
-const Logo = styled.img`
-  padding-right: 10px;
-`
+    let onScroll = () => {
+        setScrollTop(myRef.current.scrollTop)
+    }
 
-const Label = styled.label`
-  display: block;
-`
-
-const LinkTitle = styled.span`
-  cursor: pointer;
-  &:hover {
-    color: palevioletred;
-  }
-`
-
-const PriceInput = styled.input`
-  width: 50px;
-`
-const openModal = () => {
-  alert(
-    'Find the best appartment to live in using the best data sets!!! fuck brokers they are lying scum trash!!!! '
-  )
-}
-const VisualizationControls = (props) => {
-  const [checked, setChecked] = useState(false)
-  const [activeIndex, setActiveIndex] = useState([0]);
-
-  return (
-    <SidePanel>
-      <SubHeader>
-        <LinkTitle onClick={openModal}>Visualization Controls</LinkTitle>
-      </SubHeader>
-
-      <Accordion
-        activeIndex={activeIndex}
-        onActive={newActiveIndex => setActiveIndex(newActiveIndex)}
-      >
-        <AccordionPanel
-          header={renderPanelHeader('Places', activeIndex.includes(0))}
-        >
-          <Box pad="medium" background="light-2" style={{ height: '300px' }}>
-          <input placeholder="search"></input>
-          <p>
-            blahlalbdalbdalglsalg asldflas falsdf lasdf lasdlf alsdfl asldf{' '}
-          </p>
-          </Box>
-        </AccordionPanel>
-        <AccordionPanel
-          header={renderPanelHeader('311 Complaints', activeIndex.includes(1))}
-        >
-          <Box pad="medium" background="light-2" style={{ height: '50px' }}>
-            <Text>Panel 2 contents</Text>
-          </Box>
-        </AccordionPanel>
-        <AccordionPanel
-          header={renderPanelHeader('Commute Distance', activeIndex.includes(2))}
-        >
-          <Box pad="medium" background="light-2" style={{ height: '300px' }}>
-            <Text>Panel 3 contents</Text>
-          </Box>
-        </AccordionPanel>
-
-
-        <AccordionPanel
-          header={renderPanelHeader('Suitability Index', activeIndex.includes(2))}
-        >
-          <Box pad="medium" background="light-2" style={{ height: '300px' }}>
-          <Label>
-            <input type="range"></input>noise complaints
-          </Label>
-          <Label>
-            <input type="range"></input>distance to yoga studio
-          </Label>
-          <Label>
-            <input type="range"></input>density of saunas
-          </Label>
-          <Label>
-            <input type="range"></input>gentrification score
-          </Label>
-        </Box>
-        </AccordionPanel>
-
-        <AccordionPanel
-        header={renderPanelHeader('Demographics', activeIndex.includes(3))}>
-        <span> racial demographic dot map</span>
-        </AccordionPanel>
-      </Accordion>
-
-    </SidePanel>
-  )
+    return (
+        <div className="hidden md:block fixed inset-0 overflow-hidden z-50">
+            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex transform-gpu transition-transform">
+                <div className="relative w-screen max-w-sm">
+                    <div className="absolute top-0 left-0 -ml-8 pt-4 pr-2 sm:-ml-10 sm:pr-4 flex">
+                        {/* add legend here */}
+                    </div>
+                    <div className="h-full flex flex-col pt-6 bg-white shadow-xl overflow-y-scroll">
+                        <div className="px-4 sm:px-6">
+                            <div className="pb-5">
+                                <img
+                                    className="inline pr-2"
+                                    src="/favicon.png"
+                                />
+                                <span className="text-xl pr-3">
+                                    Crib Finder
+                                </span>
+                                <span className="text-xs">
+                                    Data Driven Apartment Hunting
+                                </span>
+                            </div>
+                        </div>
+                        <div className="relative flex-1 sm:px-6">
+                            <div
+                                className="absolute inset-0 pointer-events-auto overflow-scroll"
+                                onScroll={onScroll}
+                                ref={myRef}
+                            >
+                                <Accordion
+                                    setLayer={setLayer}
+                                    scrollTop={scrollTop}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    )
 }
 
 export default VisualizationControls

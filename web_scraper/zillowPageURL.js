@@ -16,6 +16,7 @@ async function sleep(fn, ...args) {
 }
 
 ;(async () => {
+
   puppeteerExtra.use(pluginStealth())
   const browser = await puppeteerExtra.launch({ headless: false })
   const url =
@@ -24,6 +25,7 @@ async function sleep(fn, ...args) {
   // const breaking
   const allUrls = []
   async function getUrls(i) {
+
     // wrap it into a function
     console.log('starting attempt:', i)
     const page = await browser.newPage()
@@ -36,6 +38,7 @@ async function sleep(fn, ...args) {
       nodes.map((el) => el.href)
     )
     urls.forEach((url) => allUrls.push(url))
+
 
     await page.waitFor(1500)
 

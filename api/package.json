@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@prisma/client": "^2.11.0",
-    "@redwoodjs/api": "^0.24.0",
+    "@redwoodjs/api": "^0.27.1",
     "mongoose": "^5.11.8"
   },
   "devDependencies": {

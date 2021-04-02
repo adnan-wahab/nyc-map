@@ -1,13 +1,17 @@
 'use strict'
 
+var sqlite3 = require('sqlite3').verbose();
+//var db = new sqlite3.Database(':memory:');
+
 const fs = require('fs')
+const _ = require('lodash')
 
 const yelp = require('yelp-fusion')
-const client = yelp.client(
-  '0QCQsubRVAbIPNJFPBVSb-Ykx6rrYUZnYhD4d8wHJqK-fsVpawFkD5hdG54i2qrRUE7M_rcAv3m63xPK6VGUb5MSpR0PtuaCC75KNq8Yd-cHc0Z_85UxaRV_OQQGYHYx'
+const yelpClient = yelp.client(
+  'SYDWVw8rxlk-WMby8RVKDs33KsTTWqzXTiPhj7sVb4yKvGxmxyZglcNW4B7Go7IKVhl_67bCBfS38qk7WQSWmehDpmMXuvB2cZ1dejWGzRZ1LEpsOuZokxgLWAYfYHYx'
 )
 
-let zipCodes = [
+const zipCodes = [
   10001,
   10002,
   10003,
@@ -153,82 +157,126 @@ let zipCodes = [
   10281,
   10282,
   10285,
-  10286,
+  10286
 ]
 
-let blist = {}
+const blist = {}
 
-let startSearch = (zip, index) => {
+const queue = []
+
+const startSearch = (zip, index) => {
   setTimeout(() => {
-    search(zip, index)
-  }, index * 1000)
+    queue.push([zip, 0])
+  }, index * 2000)
 }
 
 let count = 0
 
-let search = async (zip, index) => {
-  let response = await client.search({
-    location: 'new york ' + zip,
-    limit: 50,
-    //offset: index * 50,
+let totals = 0
+const search = async (coords, offset) => {
+  coords[0] = coords[0] ||  (40.9 - (Math.random() / 2))
+  coords[1] = coords[1] || (-74 + (Math.random() / 3))
+  const response = await yelpClient.search({
+    latitude:  coords[0],
+    longitude: coords[1],
+    // radius: 400,
+    limit:50,
+    offset: offset * 50,
   })
 
-  response.jsonBody.businesses.forEach((b) => (blist[b.id] = b))
+  const total = response.jsonBody.total
+  console.log(`coords ${coords},  total ${response.jsonBody.total}, found ${response.jsonBody.businesses.length}, offset:${offset}, scraped: ${Object.keys(db).length}`)
+  totals += total
+  //response.jsonBody.businesses.forEach((b) => (blist[b.id] = b))
+  if(! response.jsonBody.businesses.length) return
+  //const result = await db.collection('places').insertMany(response.jsonBody.businesses)
+  response.jsonBody.businesses.forEach(b => db[b.id] = b)
+  fs.writeFileSync('yelp.json', JSON.stringify(db, null,2))
 
-  console.log(count, zipCodes.length)
-  if (++count === zipCodes.length) {
-    console.log('writing file to json')
-    console.log(blist)
-    fs.writeFileSync('yelp.json', JSON.stringify(Object.values(blist)))
-  }
-  // .then((response) => {
-  //   //master = master.concat.apply(master, response.jsonBody.businesses)
-  //   //console.log(response.jsonBody.businesses)
-  //   console.log(index, 'counted ' + Object.keys(blist).length)
-  //   count++
-  //   //if (count === i) console.log('done')
-  // })
-  // .catch((e) => {
-  //   console.log(e)
-  // })
+  // .bulkWrite(response.jsonBody.businesses.map(b => {
+  //   return {updateOne: {filter: b, update: b, upsert: true}}
+  // }))
+  //console.log(totals)
+//filter
+//id,name,imague_url,is_closed,url, review_count, categories:[], rating, coordinates,[], price
+  if ((offset*50) < total && offset < 19) queue.push([coords, offset+1])
+  // if (++count === zipCodes.length) {
+  //   console.log('total businesses ' + total)
+  //   console.log('writing file to json')
+  //   console.log(blist)
+  //   fs.writeFileSync('yelp.json', JSON.stringify(Object.values(blist)))
+  // }
 }
-function timeout(ms) {
+function timeout (ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
-async function sleep(fn, ...args) {
+async function sleep (fn, ...args) {
   await timeout(3000)
   return fn(...args)
 }
+const makeDb = async(dbname='test') => {
+  const MongoClient = require('mongodb').MongoClient
 
-// while (goOn) {
-//   // other code
-//   var [parents] = await Promise.all([
-//       listFiles(nextPageToken).then(requestParents),
-//       timeout(5000)
-//   ]);
-//   // other code
-// }
-//for (var i = 0; i < 1000; i++) startSearch(i)
-// zipCodes = zipCodes.slice(0, 5)
-zipCodes.forEach((zip, index) => {
-  startSearch(zip, index)
-})
+  const url = `mongodb+srv://poop:poop@cluster0.rucmp.mongodb.net/test?retryWrites=true&w=majority`
 
-//const MongoClient = require('mongodb').MongoClient
+  //const client = new MongoClient(url, { useUnifiedTopology: true })
+  const client = await MongoClient.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  db = client.db(dbname)
 
-// const url = `mongodb+srv://poop:poop@cluster0.rucmp.mongodb.net/test?retryWrites=true&w=majority`
+//console.log('wtf')
+//let n = await db.collection('neighborhoods').find({}).toArray()
+// console.log('wtf')
+//c//onsole.log(n)
+// let flat = _.flattenDeep(n.map(d=> d.geometry.coordinates))
+// let group = _.chunk(flat, 2).map(d => { return {x: d[0], y: d[1] } })
+//fs.writeFileSync('neigh.json', JSON.stringify(n, null, 2))
+}
 
-// const client = new MongoClient(url, { useUnifiedTopology: true })
+let db
+const start = async() => {
+
+  db = JSON.parse(fs.readFileSync('yelp.json'))
+
+  zipCodes.forEach((zip, index) => {
+    startSearch([], index)
+  })
+  let id = setInterval(function () {
+    if(queue.length)
+      search.apply(this, queue.pop())
+    else
+      clearInterval(id)
+  }, 2000)
+}
+//354356
+start()
+
+// const response = yelpClient.search({
+//   longitude: -73.91922208269459,
+//   latitude: 40.72185277744134,
+//   radius: 2000,
+// }).then(d => {
+//   console.log(d.jsonBody.total)
+//   //console.log(d.jsonBody.businesses[0])
+// })
+
+
+
+//makeDb('sample_restaurants')
+
+//console.log(zipCodes.length)
 
 // export const handler = async (event, context) => {
 //   console.log(event, context)
 
 //   let query = event.body
 //   // connect to your cluster
-//   const client = await MongoClient.connect(url, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
+  // const client = await MongoClient.connect(url, {
+  //   useNewUrlParser: true,
+  //   useUnifiedTopology: true,
+  // })
 //   // specify the DB's name
 //   const db = client.db('sample_restaurants')
 //   // execute find query
