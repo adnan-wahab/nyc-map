@@ -30,26 +30,35 @@ async function sleep(fn, ...args) {
     console.log('starting attempt:', i)
     const page = await browser.newPage()
 
-    await page.goto(url)
 
-    let selector = '.list-card-top a'
-    //let links = await page.$(selector)
-    let urls = await page.$$eval(selector, (nodes) =>
-      nodes.map((el) => el.href)
-    )
-    urls.forEach((url) => allUrls.push(url))
+    // const breaking
+    const allUrls = []
+    async function getUrls(i) {
+        // wrap it into a function
+        console.log('starting attempt:', i)
+        const page = await browser.newPage()
 
 
-    await page.waitFor(1500)
+        await page.goto(url)
 
-    await page.close()
+        let selector = '.list-card-top a'
+        //let links = await page.$(selector)
+        let urls = await page.$$eval(selector, (nodes) =>
+            nodes.map((el) => el.href)
+        )
+        urls.forEach((url) => allUrls.push(url))
 
-    await browser.close()
 
-    console.log(`Writing ${urls.length} Urls  to disk...`)
+        await page.waitFor(1500)
 
-    fs.writeFileSync(DESTINATION_PATH, JSON.stringify(allUrls))
-  }
+        await page.close()
 
-  sleep(getUrls, 0)
+        await browser.close()
+
+        console.log(`Writing ${urls.length} Urls  to disk...`)
+
+        fs.writeFileSync(DESTINATION_PATH, JSON.stringify(allUrls))
+    }
+
+    sleep(getUrls, 0)
 })()
